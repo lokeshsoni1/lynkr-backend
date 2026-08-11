@@ -32,7 +32,7 @@ public class UrlService {
     private final UrlMappingRepository urlMappingRepository;
     private final ClickAnalyticsRepository clickAnalyticsRepository;
 
-    @Value("${lynkr.app.base-url:http://localhost:8080}")
+    @Value("${lynkr.app.base-url:https://lynkr-backend-3kal.onrender.com}")
     private String baseUrl;
 
     @Transactional
