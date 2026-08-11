@@ -46,10 +46,10 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // H2 Console support
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.GET, "/{code:[a-zA-Z0-9_-]+}").permitAll()
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/urls/shorten").permitAll() // Allow guest shortening
-                .requestMatchers("/{shortCode:[a-zA-Z0-9_-]+}").permitAll() // Short URL redirect endpoint
                 .requestMatchers("/api/v1/urls/my-links", "/api/v1/urls/{id}", "/api/v1/urls/{id}/analytics").authenticated()
                 .requestMatchers("/api/v1/analytics/**").authenticated()
                 .anyRequest().permitAll()
@@ -63,14 +63,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of(
-            "http://localhost:[*]",
-            "http://127.0.0.1:[*]",
-            "https://*.vercel.app",
-            "*"
-        ));
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization", "Location"));
         configuration.setAllowCredentials(true);
         

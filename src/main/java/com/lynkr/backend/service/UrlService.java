@@ -38,7 +38,8 @@ public class UrlService {
     @Transactional
     public UrlResponse shortenUrl(ShortenRequest request, User user) {
         String originalUrl = request.getOriginalUrl().trim();
-        if (!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")) {
+        String lowerUrl = originalUrl.toLowerCase();
+        if (!lowerUrl.startsWith("http://") && !lowerUrl.startsWith("https://")) {
             originalUrl = "https://" + originalUrl;
         }
 
