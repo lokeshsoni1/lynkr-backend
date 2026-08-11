@@ -46,10 +46,12 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // H2 Console support
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.GET, "/{code:[a-zA-Z0-9_-]+}").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/urls/shorten").permitAll() // Public & guest URL shortening
+                .requestMatchers(HttpMethod.GET, "/{code:[a-zA-Z0-9_-]+}").permitAll() // Root HTTP 302 Redirect Controller
+                .requestMatchers("/{code:[a-zA-Z0-9_-]+}").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/urls/shorten").permitAll() // Allow guest shortening
                 .requestMatchers("/api/v1/urls/my-links", "/api/v1/urls/{id}", "/api/v1/urls/{id}/analytics").authenticated()
                 .requestMatchers("/api/v1/analytics/**").authenticated()
                 .anyRequest().permitAll()
@@ -63,7 +65,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOriginPatterns(List.of(
+            "https://lynkr-frontend-beryl.vercel.app",
+            "https://*.vercel.app",
+            "http://localhost:[*]",
+            "http://127.0.0.1:[*]",
+            "*"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization", "Location"));
