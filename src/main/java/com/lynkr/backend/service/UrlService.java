@@ -159,7 +159,8 @@ public class UrlService {
 
     public UrlResponse mapToUrlResponse(UrlMapping mapping) {
         String activeCode = StringUtils.hasText(mapping.getCustomAlias()) ? mapping.getCustomAlias() : mapping.getShortCode();
-        String fullShortUrl = baseUrl.endsWith("/") ? baseUrl + activeCode : baseUrl + "/" + activeCode;
+        String effectiveBaseUrl = StringUtils.hasText(baseUrl) ? baseUrl.trim() : "https://lynkr-backend-3kal.onrender.com";
+        String fullShortUrl = effectiveBaseUrl.endsWith("/") ? effectiveBaseUrl + activeCode : effectiveBaseUrl + "/" + activeCode;
 
         return UrlResponse.builder()
                 .id(mapping.getId())
