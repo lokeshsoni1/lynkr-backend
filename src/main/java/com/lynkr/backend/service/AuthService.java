@@ -31,13 +31,14 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new UserAlreadyExistsException("Email already registered.");
+        String cleanEmail = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : "";
+        if (userRepository.existsByEmail(cleanEmail)) {
+            throw new UserAlreadyExistsException("User already registered! Please log in instead.");
         }
 
         User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
+                .name(request.getName() != null ? request.getName().trim() : "")
+                .email(cleanEmail)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .provider("LOCAL")
                 .build();
@@ -52,11 +53,12 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User does not exist. Please register."));
+        String cleanEmail = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : "";
+        User user = userRepository.findByEmail(cleanEmail)
+                .orElseThrow(() -> new UserNotFoundException("User does not exist. Please register first!"));
 
         if (user.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new UnauthorizedException("Invalid credentials.");
+            throw new UnauthorizedException("Invalid email or password.");
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
@@ -86,21 +88,22 @@ public class AuthService {
         }
 
         GoogleIdToken.Payload payload = idToken.getPayload();
-        String email = payload.getEmail();
+        String rawEmail = payload.getEmail();
         String name = (String) payload.get("name");
 
-        if (email == null || email.isBlank()) {
+        if (rawEmail == null || rawEmail.isBlank()) {
             throw new BadRequestException("Google token does not contain a valid email!");
         }
 
+        String cleanEmail = rawEmail.trim().toLowerCase();
         if (name == null || name.isBlank()) {
-            name = email.split("@")[0];
+            name = cleanEmail.split("@")[0];
         }
 
         final String finalName = name;
-        User user = userRepository.findByEmail(email).orElseGet(() -> {
+        User user = userRepository.findByEmail(cleanEmail).orElseGet(() -> {
             User newUser = User.builder()
-                    .email(email)
+                    .email(cleanEmail)
                     .name(finalName)
                     .provider("GOOGLE")
                     .build();
