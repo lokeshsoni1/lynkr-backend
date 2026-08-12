@@ -37,6 +37,13 @@ public class UrlService {
 
     @Transactional
     public UrlResponse shortenUrl(ShortenRequest request, User user) {
+        if (user != null) {
+            long count = urlMappingRepository.countByUser(user);
+            if (count >= 10) {
+                throw new BadRequestException("Account link limit reached. Maximum 10 links allowed per user.");
+            }
+        }
+
         String originalUrl = request.getOriginalUrl().trim();
         String lowerUrl = originalUrl.toLowerCase();
         if (!lowerUrl.startsWith("http://") && !lowerUrl.startsWith("https://")) {

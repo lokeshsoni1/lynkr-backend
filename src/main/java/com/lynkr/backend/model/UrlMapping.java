@@ -21,6 +21,10 @@ public class UrlMapping {
     @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
+    @OneToMany(mappedBy = "urlMapping", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private java.util.List<ClickAnalytics> clickAnalytics = new java.util.ArrayList<>();
+
     @Column(nullable = false, length = 2048)
     private String originalUrl;
 

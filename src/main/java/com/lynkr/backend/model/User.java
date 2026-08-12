@@ -23,8 +23,12 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private String provider = "LOCAL";
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

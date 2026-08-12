@@ -30,4 +30,10 @@ public class AuthController {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
     }
+
+    @PostMapping("/google")
+    public ResponseEntity<ApiResponse<AuthResponse>> googleLogin(@Valid @RequestBody com.lynkr.backend.dto.GoogleAuthRequest request) {
+        AuthResponse response = authService.googleAuth(request);
+        return ResponseEntity.ok(ApiResponse.success("Google authentication successful", response));
+    }
 }

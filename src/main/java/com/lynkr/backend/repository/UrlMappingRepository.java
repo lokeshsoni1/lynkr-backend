@@ -22,6 +22,7 @@ public interface UrlMappingRepository extends JpaRepository<UrlMapping, Long> {
 
     List<UrlMapping> findByUserIdOrderByCreatedAtDesc(Long userId);
     long countByUserId(Long userId);
+    long countByUser(User user);
 
     @Query("SELECT COUNT(u) FROM UrlMapping u WHERE u.user.id = :userId AND (u.expiresAt IS NULL OR u.expiresAt > :now)")
     long countActiveLinksByUserId(@Param("userId") Long userId, @Param("now") LocalDateTime now);
