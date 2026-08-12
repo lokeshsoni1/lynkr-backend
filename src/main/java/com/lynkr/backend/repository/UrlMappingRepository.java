@@ -1,6 +1,7 @@
 package com.lynkr.backend.repository;
 
 import com.lynkr.backend.model.UrlMapping;
+import com.lynkr.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
