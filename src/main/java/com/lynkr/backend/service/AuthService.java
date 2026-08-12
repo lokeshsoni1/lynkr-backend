@@ -11,6 +11,8 @@ import com.lynkr.backend.dto.RegisterRequest;
 import com.lynkr.backend.dto.UserDto;
 import com.lynkr.backend.exception.BadRequestException;
 import com.lynkr.backend.exception.UnauthorizedException;
+import com.lynkr.backend.exception.UserAlreadyExistsException;
+import com.lynkr.backend.exception.UserNotFoundException;
 import com.lynkr.backend.model.User;
 import com.lynkr.backend.repository.UserRepository;
 import com.lynkr.backend.security.JwtUtil;
@@ -30,7 +32,7 @@ public class AuthService {
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Email is already registered!");
+            throw new UserAlreadyExistsException("Email already registered.");
         }
 
         User user = User.builder()
@@ -51,10 +53,10 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
+                .orElseThrow(() -> new UserNotFoundException("User does not exist. Please register."));
 
         if (user.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new UnauthorizedException("Invalid email or password");
+            throw new UnauthorizedException("Invalid credentials.");
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
