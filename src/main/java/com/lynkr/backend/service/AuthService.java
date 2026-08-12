@@ -10,6 +10,7 @@ import com.lynkr.backend.dto.LoginRequest;
 import com.lynkr.backend.dto.RegisterRequest;
 import com.lynkr.backend.dto.UserDto;
 import com.lynkr.backend.exception.BadRequestException;
+import com.lynkr.backend.exception.UnauthorizedException;
 import com.lynkr.backend.model.User;
 import com.lynkr.backend.repository.UserRepository;
 import com.lynkr.backend.security.JwtUtil;
@@ -50,10 +51,10 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadRequestException("Invalid email or password!"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
 
         if (user.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BadRequestException("Invalid email or password!");
+            throw new UnauthorizedException("Invalid email or password");
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
