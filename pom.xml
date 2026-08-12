@@ -48,15 +48,10 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Databases: H2 for local dev, PostgreSQL for production -->
+        <!-- Database: H2 Database -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 
